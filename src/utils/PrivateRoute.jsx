@@ -3,7 +3,7 @@ import Home from "../pages/Home";
 import { Navigate } from "react-router-dom";
 
 function PrivateRoute() {
-  const isAuth = window.localStorage.getItem("email");
+  const isAuth = window.localStorage.getItem("userData");
   return isAuth ? <Home /> : <Navigate to={"/avtor"} />;
 }
 

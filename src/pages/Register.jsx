@@ -10,11 +10,10 @@ function Register() {
   const userData = { name, email, password };
 
   const register = () => {
-    window.localStorage.setItem("email", email);
+    window.localStorage.setItem("userData", JSON.stringify(userData));
     navigate("/");
   };
-  const user = window.localStorage.getItem("email");
-  console.log(user);
+
   return (
     <div className="register__container">
       <h1 className="register__title">Register</h1>
@@ -37,7 +36,7 @@ function Register() {
         placeholder="new password"
       />
       <button className="register__button" onClick={register}>
-        Click
+        Register
       </button>
       <div className="link__container">
         <p className="register__text">Do you have any account?</p>

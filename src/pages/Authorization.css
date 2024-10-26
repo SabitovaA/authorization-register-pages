@@ -41,3 +41,8 @@
   color: rgb(157, 91, 218);
   text-decoration: none;
 }
+.error__message {
+  color: red;
+  font-size: 10px;
+  margin-top: -15px;
+}

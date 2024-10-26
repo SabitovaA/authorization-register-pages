@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Register from "./pages/Register";
-import Avtorizatia from "./pages/Authorization";
 import Home from "./pages/Home";
 import PrivateRoute from "./utils/PrivateRoute";
+import Authorization from "./pages/Authorization";
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route index element={<Home />} />
       </Route>
       <Route path="register" element={<Register />} />
-      <Route path="avtor" element={<Avtorizatia />} />
+      <Route path="avtor" element={<Authorization />} />
     </Routes>
   );
 }
