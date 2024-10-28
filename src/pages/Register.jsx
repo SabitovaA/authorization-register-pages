@@ -1,41 +1,73 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+import { useDispatch } from "react-redux";
+import { registered } from "../redux/userDataSlice";
+import { useForm } from "react-hook-form";
 
 function Register() {
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const navigate = useNavigate();
-  const userData = { name, email, password };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onBlur" });
 
-  const register = () => {
-    window.localStorage.setItem("userData", JSON.stringify(userData));
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const isAuth = JSON.parse(window.localStorage.getItem("isAuth"));
+
+  console.log(isAuth);
+
+  const onSubmit = (data) => {
+    dispatch(registered(data));
+
     navigate("/");
+
+    reset();
   };
 
   return (
-    <div className="register__container">
+    <form className="register__container" onSubmit={handleSubmit(onSubmit)}>
       <h1 className="register__title">Register</h1>
       <input
-        className="register__input"
-        onChange={(e) => setName(e.target.value)}
+        {...register("name", {
+          required: "Field is required!",
+        })}
         type="text"
-        placeholder="name"
+        placeholder="Name"
+        className="register__input"
       />
+      {errors?.name && <p className="error__message">{errors.name?.message}</p>}
       <input
+        {...register("email", {
+          required: "Incorrect email",
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "invalid email address",
+          },
+        })}
+        type="email"
+        placeholder="Email"
         className="register__input"
-        onChange={(e) => setEmail(e.target.value)}
-        type="text"
-        placeholder="email"
       />
+      {errors?.email && (
+        <p className="error__message">{errors.email?.message}</p>
+      )}
       <input
+        {...register("password", {
+          required: "Field is required!",
+          minLength: { value: 6, message: "min 6 characters" },
+        })}
         className="register__input"
-        onChange={(e) => setPassword(e.target.value)}
-        type="text"
-        placeholder="new password"
+        type="password"
+        placeholder="password"
       />
-      <button className="register__button" onClick={register}>
+      {errors?.password && (
+        <p className="error__message">{errors.password?.message}</p>
+      )}
+      <button className="register__button" disabled={!isValid}>
         Register
       </button>
       <div className="link__container">
@@ -44,7 +76,7 @@ function Register() {
           Authorization
         </Link>
       </div>
-    </div>
+    </form>
   );
 }
 

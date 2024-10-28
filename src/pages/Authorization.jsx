@@ -1,46 +1,77 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Authorization.css";
+import { useForm } from "react-hook-form";
 
 function Authorization() {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onBlur" });
+
   const [error, setError] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
   const navigate = useNavigate();
-  const userInfo = { email, password };
 
-  const user = JSON.parse(window.localStorage.getItem("userData"));
+  const isAuth = JSON.parse(window.localStorage.getItem("isAuth"));
+  console.log(isAuth);
 
-  const author = () => {
-    if (
-      user &&
-      user.email === userInfo.email &&
-      user.password === userInfo.password
-    ) {
-      navigate("/");
-    } else {
-      setError("Incorrect email or password. Please try again.");
+  const onSubmit = (data) => {
+    console.log(data);
+    if (!isAuth) {
+      setErrorEmail("You don't have an account");
+      return;
     }
+    let hasError = false;
+    if (isAuth.email !== data.email) {
+      setErrorEmail("Incorrect email or you don't have an account");
+      hasError = true;
+    }
+    if (isAuth.password !== data.password) {
+      setError("Incorrect password");
+      hasError = true;
+    }
+    if (!hasError) {
+      navigate("/");
+    }
+    reset();
   };
 
   return (
-    <div className="login__container">
+    <form className="login__container" onSubmit={handleSubmit(onSubmit)}>
       <h1 className="login__title">Log In</h1>
       <input
-        onChange={(e) => setEmail(e.target.value)}
+        {...register("email", {
+          required: "Incorrect email or you dont have account",
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "invalid email address",
+          },
+        })}
+        type="email"
+        placeholder="Email"
         className="login__input"
-        type="text"
-        placeholder="email"
       />
-      <div className="error__message">{error}</div>
+      {errors?.email && (
+        <p className="error__message">{errors.email?.message}</p>
+      )}
+      <div className="error__message">{errorEmail}</div>
       <input
-        onChange={(e) => setPassword(e.target.value)}
+        {...register("password", {
+          required: "Field is required!",
+          minLength: { value: 6, message: "min 6 characters" },
+        })}
         className="login__input"
-        type="text"
+        type="password"
         placeholder="password"
       />
+      {errors?.password && (
+        <p className="error__message">{errors.password?.message}</p>
+      )}
       <div className="error__message">{error}</div>
-      <button onClick={author} className="login__button">
+      <button disabled={!isValid} className="login__button">
         Login
       </button>
       <div className="link__container">
@@ -49,7 +80,7 @@ function Authorization() {
           Register
         </Link>
       </div>
-    </div>
+    </form>
   );
 }
 
